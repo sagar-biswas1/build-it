@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma-studio": "npx prisma studio"
+    "prisma-studio": "npx prisma studio",
+    "inngest":"npx inngest-cli@latest dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",
@@ -49,6 +50,7 @@
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "init": "^0.1.2",
+    "inngest": "^3.40.1",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.542.0",
     "next": "15.3.4",

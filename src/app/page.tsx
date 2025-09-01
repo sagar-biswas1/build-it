@@ -1,22 +1,35 @@
+"use client";
+import { Button } from '@/components/ui/button';
+import { useTRPC } from '@/trpc/client';
+import { useMutation } from '@tanstack/react-query';
+import React from 'react';
+import { toast } from 'sonner';
 
-import { useTRPC } from "@/trpc/client";
-import { caller, getQueryClient, trpc } from "@/trpc/server";
-import { dehydrate, HydrationBoundary, useQuery } from "@tanstack/react-query";
-import Image from "next/image";
-import Client from "./client";
-import { Suspense } from "react";
+const Page = () => {
 
-export default async function Home() {
-  const queryClient = getQueryClient()
+  const trpc = useTRPC()
 
-  void queryClient.prefetchQuery(trpc.hello.queryOptions({ text: "dffffffff hello" }))
-
+  const invoke = useMutation(trpc.invoke.mutationOptions({
+    onSuccess(data) {
+      toast.success("Invoked bg job successfully!")
+    },
+    onError(error) {
+      console.log("error", error)
+    }
+  }))
   return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Client />
-      </Suspense>
-
-    </HydrationBoundary>
+    <div className='flex flex-col items-center justify-center min-h-screen py-2'>
+      <div>
+        <h1 className="text-3xl font-bold underline">Hello, Next.js!</h1>
+        <p>Welcome to your Next.js application.</p>
+        <Button onClick={() => {
+          invoke.mutate({ text: "sagar" })
+        }}>
+          Invoke Inngest bg job
+        </Button>
+      </div>
+    </div>
   );
-}
+};
+
+export default Page;
