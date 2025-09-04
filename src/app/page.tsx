@@ -2,17 +2,19 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTRPC } from '@/trpc/client';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 const Page = () => {
   const [inputValue, setInputValue] = useState('');
   const trpc = useTRPC()
+  const { data: messages } = useQuery(trpc.messages.getMany.queryOptions())
 
-  const invoke = useMutation(trpc.invoke.mutationOptions({
+
+  const createMessage = useMutation(trpc.messages.create.mutationOptions({
     onSuccess(data) {
-      toast.success("Invoked bg job successfully!")
+      toast.success("Message Created")
     },
     onError(error) {
       console.log("error", error)
@@ -27,10 +29,14 @@ const Page = () => {
           onChange={(e) => setInputValue(e.target.value)}
         />
         <Button onClick={() => {
-          invoke.mutate({ text: inputValue })
+          createMessage.mutate({ value: inputValue })
         }}>
-          Invoke Inngest bg job
+          Invoke bg job
         </Button>
+
+        {
+
+        }
       </div>
     </div>
   );
