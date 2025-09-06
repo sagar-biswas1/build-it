@@ -3,35 +3,41 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useTRPC } from '@/trpc/client';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+
 import React, { useState } from 'react';
 import { toast } from 'sonner';
 
 const Page = () => {
+
+  const router = useRouter()
   const [inputValue, setInputValue] = useState('');
   const trpc = useTRPC()
-  const { data: messages } = useQuery(trpc.messages.getMany.queryOptions())
 
 
-  const createMessage = useMutation(trpc.messages.create.mutationOptions({
+
+  const createProject = useMutation(trpc.projects.create.mutationOptions({
     onSuccess(data) {
+      router.push(`/projects/${data.id}`)
       toast.success("Message Created")
     },
     onError(error) {
-      console.log("error", error)
+      toast.error(error.message)
     }
   }))
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen py-2'>
-      <div>
-        <h1 className="text-3xl font-bold underline">Hello, Next.js!</h1>
-        <p>Welcome to your Next.js application.</p>
+    <div className='h-screen w-screen flex items-center justify-center'>
+      <div className='max-w-7xl mx-auto flex items-center flex-col gap-y-4 justify-center'>
+
         <Input placeholder="Type something..." className="mb-4"
           onChange={(e) => setInputValue(e.target.value)}
         />
-        <Button onClick={() => {
-          createMessage.mutate({ value: inputValue })
-        }}>
-          Invoke bg job
+        <Button
+          disabled={createProject.isPending}
+          onClick={() => {
+            createProject.mutate({ value: inputValue })
+          }}>
+          Submit
         </Button>
 
         {

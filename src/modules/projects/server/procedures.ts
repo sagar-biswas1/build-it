@@ -4,17 +4,42 @@ import { prisma } from "@/lib/db"
 import { baseProcedure, createTRPCRouter } from "@/trpc/init"
 import { z } from "zod"
 import { generateSlug } from "random-word-slugs"
+import { TRPCError } from "@trpc/server"
 
 export const projectRouter = createTRPCRouter({
-    getMany: baseProcedure.query(async () => {
+    getOne: baseProcedure
+        .input(z.object({
+            id: z.string().min(1, { message: "id cannot be empty" })
+        }))
+        .query(async ({ input }) => {
 
-        const messages = await prisma.message.findMany({
-            orderBy: {
-                updatedAt: "asc"
+            const project = await prisma.project.findUnique({
+                where: {
+                    id: input.id
+                },
+
+            })
+
+            if (!project) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Project not found"
+                })
             }
-        })
-        return messages
-    }),
+            return project
+        }),
+    getMany: baseProcedure
+
+        .query(async () => {
+
+            const projects = await prisma.project.findMany({
+
+                orderBy: {
+                    updatedAt: "asc"
+                }
+            })
+            return projects
+        }),
     create: baseProcedure
         .input(z.object({
             value: z.string().min(1, { message: "value cannot be empty" }).max(10000, { message: "Value is too long" })
@@ -39,7 +64,7 @@ export const projectRouter = createTRPCRouter({
                 name: "agent/code-app", data: {
                     input: input.value,
 
-                    projectid: createdProject?.id
+                    projectId: createdProject?.id
 
                 }
             })
