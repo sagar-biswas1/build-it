@@ -4,9 +4,10 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import { useTRPC } from '@/trpc/client';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import React, { Suspense, useState } from 'react';
-import MessagesContainer from './components/messages-container';
+import MessagesContainer from '../components/messages-container';
 import { Fragment } from '@/generated/prisma';
-import FragmentWeb from './components/fragment-web';
+import FragmentWeb from '../components/fragment-web';
+import ProjectHeader from '../components/project-header';
 
 interface Props {
     projectId: string
@@ -22,6 +23,9 @@ const ProjectView = ({ projectId }: Props) => {
                     minSize={20}
                     className='flex flex-col min-h-0'
                 >
+                    <Suspense fallback={"Loading"}>
+                        <ProjectHeader projectId={projectId} />
+                    </Suspense>
                     <Suspense fallback={"Loading messages"}>
                         <MessagesContainer projectId={projectId}
                             activeFragment={activeFragment}
