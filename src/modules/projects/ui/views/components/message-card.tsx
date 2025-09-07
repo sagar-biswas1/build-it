@@ -99,10 +99,13 @@ const AssistantMessage = ({ content, fragment, createdAt, isActiveFragment, type
 
 
 const FragmentCard = ({ fragment, isActiveFragment, onFragmentClick }: FragmentCardProps) => {
-    return <button className={cn("flex items-start text-start gap-2 rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors",
+    return <button
+        onClick={() => fragment && onFragmentClick(fragment)}
+        className={cn("flex items-start text-start gap-2 rounded-lg bg-muted w-fit p-3 hover:bg-secondary transition-colors",
 
-        isActiveFragment && "bg-primary text-primary-foreground border-primary  hover:bg-primary"
-    )}>
+            isActiveFragment && "bg-primary text-primary-foreground border-primary  hover:bg-primary"
+
+        )}>
         <Code className='size-4 mt-0.5' />
         <div className='flex flex-col flex-1'>
             <span className=' text-sm font-medium line-clamp-1'>
