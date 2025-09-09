@@ -33,18 +33,19 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+
           <ThemeProvider
-            attribute={'class'}
+            attribute="class"
             defaultTheme="system"
             enableSystem
-            disableTransitionOnChange
+            themes={['light', 'dark', 'system', 'cool']}
+            storageKey="ui-theme"
           >
-
             <Toaster />
             {children}
           </ThemeProvider>
         </body>
       </html>
-    </TRPCReactProvider>
+    </TRPCReactProvider >
   );
 }

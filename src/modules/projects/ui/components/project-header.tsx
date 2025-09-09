@@ -30,8 +30,8 @@ const ProjectHeader = ({ projectId }: Props) => {
                     >
                         <Drama color="#8301a7" /> <span className='text-sm font-medium'> {project?.name}</span>
                         <ChevronDownIcon />
-                    </Button>
-                </DropdownMenuTrigger>
+                    </Button >
+                </DropdownMenuTrigger >
                 <DropdownMenuContent side="bottom" align='start'>
                     <DropdownMenuItem asChild>
                         <Link href="/">
@@ -53,18 +53,21 @@ const ProjectHeader = ({ projectId }: Props) => {
                                         <span>Light</span>
                                     </DropdownMenuRadioItem>
                                     <DropdownMenuRadioItem value='dark'>
-                                        <span>dark</span>
+                                        <span>Dark</span>
                                     </DropdownMenuRadioItem>
                                     <DropdownMenuRadioItem value='system'>
-                                        <span>system</span>
+                                        <span>System</span>
+                                    </DropdownMenuRadioItem>
+                                    <DropdownMenuRadioItem value='cool'>
+                                        <span>Cool</span>
                                     </DropdownMenuRadioItem>
                                 </DropdownMenuRadioGroup>
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
                 </DropdownMenuContent>
-            </DropdownMenu>
-        </header>
+            </DropdownMenu >
+        </header >
     );
 };
 

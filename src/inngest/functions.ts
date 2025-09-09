@@ -6,6 +6,7 @@ import { getSandBox, lastAssistantTextMessageContent } from "./utils";
 import { NEXTJS_DEV_PROMPT } from "./prompts/nextjsDevPrompt";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
+import { ALLOWED_COLUMNS, ALLOWED_TABLES } from "./accessDB";
 
 interface AgentState {
     summary: string;
@@ -26,7 +27,7 @@ export const codeAgentFunction = inngest.createFunction(
             system: NEXTJS_DEV_PROMPT,
             model: openai({
                 model: "gpt-4o",
-                defaultParameters: { temperature: 0.5 },
+                defaultParameters: { temperature: 0.3 },
             }),
 
             // model: gemini({
@@ -131,6 +132,43 @@ export const codeAgentFunction = inngest.createFunction(
                         })
 
                     }
+                }),
+                createTool({
+                    name: "readDatabase",
+                    description: "Safely read allowed database tables for analytics.",
+                    parameters: z.object({
+                        table: z.enum(ALLOWED_TABLES as [string, ...string[]]),
+                        columns: z.array(z.string()).optional(),
+                        limit: z.number().min(1).max(500).default(100),
+                    }),
+                    handler: async ({ table, columns, limit }, { step }) => {
+                        return await step?.run("readDatabase", async () => {
+                            try {
+
+                                // Filter columns by whitelist
+                                const safeColumns = columns?.filter(c => ALLOWED_COLUMNS[table].includes(c)) || ALLOWED_COLUMNS[table];
+
+                                // Construct Prisma select object dynamically
+                                const select: Record<string, boolean> = {};
+                                safeColumns.forEach(c => (select[c] = true));
+
+                                // Execute query safely
+                                // Ensure you only access tables that support findMany
+                                const modelDelegate = (prisma as Record<string, any>)[table];
+                                if (typeof modelDelegate?.findMany !== "function") {
+                                    throw new Error(`Table '${table}' does not support findMany`);
+                                }
+                                const result = await modelDelegate.findMany({
+                                    select,
+                                    take: limit,
+                                });
+
+                                return JSON.stringify(result);
+                            } catch (e: any) {
+                                return "Error: " + e.message;
+                            }
+                        });
+                    },
                 })
 
             ],

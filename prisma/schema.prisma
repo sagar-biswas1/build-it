@@ -55,3 +55,92 @@ model Project {
 
   messages Message[]
 }
+
+model Customer {
+  id              Int      @id @default(autoincrement())
+  name            String
+  email           String   @unique
+  billingAddress  String?
+  shippingAddress String?
+  orders          Order[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Item {
+  id             Int             @id @default(autoincrement())
+  name           String
+  description    String?
+  price          Float
+  stockQuantity  Int
+  orderLineItems OrderLineItem[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Order {
+  id             Int             @id @default(autoincrement())
+  customerId     Int
+  customer       Customer        @relation(fields: [customerId], references: [id])
+  orderDate      DateTime        @default(now())
+  status         String // e.g., "Pending", "Processing", "Shipped", "Completed"
+  shippingFee    Float           @default(0.0)
+  tax            Float           @default(0.0)
+  orderLineItems OrderLineItem[]
+  invoices       Invoice[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model OrderLineItem {
+  id               Int               @id @default(autoincrement())
+  orderId          Int
+  order            Order             @relation(fields: [orderId], references: [id])
+  itemId           Int
+  item             Item              @relation(fields: [itemId], references: [id])
+  quantity         Int
+  unitPrice        Float
+  invoiceLineItems InvoiceLineItem[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model Invoice {
+  id               Int               @id @default(autoincrement())
+  orderId          Int
+  order            Order             @relation(fields: [orderId], references: [id])
+  invoiceDate      DateTime          @default(now())
+  dueDate          DateTime
+  status           String // e.g., "Issued", "Paid", "Overdue"
+  tax              Float             @default(0.0)
+  invoiceLineItems InvoiceLineItem[]
+  transactions     Transaction[]
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+}
+
+model InvoiceLineItem {
+  id              Int           @id @default(autoincrement())
+  invoiceId       Int
+  invoice         Invoice       @relation(fields: [invoiceId], references: [id])
+  orderLineItemId Int
+  orderLineItem   OrderLineItem @relation(fields: [orderLineItemId], references: [id])
+  quantity        Int
+  unitPrice       Float
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model Transaction {
+  id              Int      @id @default(autoincrement())
+  invoiceId       Int
+  invoice         Invoice  @relation(fields: [invoiceId], references: [id])
+  amount          Float
+  paymentMethod   String // e.g., "CreditCard", "PayPal", "iDeal"
+  transactionDate DateTime @default(now())
+  status          String // e.g., "Authorized", "Captured", "Refunded"
+  gatewayToken    String? // e.g., Stripe Payment Intent ID
+  avsResult       String? // Address Verification System result
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
