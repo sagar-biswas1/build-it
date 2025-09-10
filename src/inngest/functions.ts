@@ -2,7 +2,6 @@ import { inngest } from "./client";
 import { gemini, createAgent, createTool, AnyZodType, createNetwork, openai, type Tool } from "@inngest/agent-kit";
 import { Sandbox } from "@e2b/code-interpreter"
 import { getSandBox, lastAssistantTextMessageContent } from "./utils";
-// import { z } from 'zod';
 import { NEXTJS_DEV_PROMPT } from "./prompts/nextjsDevPrompt";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
@@ -198,9 +197,6 @@ export const codeAgentFunction = inngest.createFunction(
                 return codeAgent
             }
         })
-        // Run the agent with an input.  This automatically uses steps
-        // to call your AI model.
-        // const { output } = await codeAgent.run(event.data.input);
 
         const result = await network.run(event.data.input)
 
