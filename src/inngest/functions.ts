@@ -40,7 +40,7 @@ export const codeAgentFunction = inngest.createFunction(
                     parameters: z.object({
                         command: z.string()
                     }),
-                    handler: async ({ command }, { step }) => {
+                    handler: async ({ command }, { step, ...rest }) => {
                         return await step?.run('terminal', async () => {
                             const buffers = {
                                 stdout: "",
@@ -76,7 +76,7 @@ export const codeAgentFunction = inngest.createFunction(
                             content: z.string()
                         }))
                     }),
-                    handler: async ({ files }, { step, network }: Tool.Options<AgentState>) => {
+                    handler: async ({ files }, { step, network, ...rest }: Tool.Options<AgentState>) => {
 
                         const newFiles = await step?.run("createOrUpdateFiles", async () => {
 
