@@ -151,7 +151,7 @@ export const codeAgentFunction = inngest.createFunction(
                                 const select: Record<string, boolean> = {};
                                 safeColumns.forEach(c => (select[c] = true));
 
-                                // Execute query safely
+
                                 // Ensure you only access tables that support findMany
                                 const modelDelegate = (prisma as Record<string, any>)[table];
                                 if (typeof modelDelegate?.findMany !== "function") {
